@@ -56,7 +56,7 @@ def _double_run(args: list[str]) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--baseline", type=Path,
+    parser.add_argument("--baseline", type=str,
                         default=REPO_ROOT / "out" / "w5" / "smoke-baseline.json",
                         help="where to write the digest table (empty string skips)")
     args = parser.parse_args()
@@ -96,18 +96,19 @@ def main() -> int:
             all_ok = False
             print(f"{name}: FAILED ({res.get('error', 'digest drift between runs')})")
 
-    if args.baseline and str(args.baseline):
+    baseline = Path(args.baseline) if args.baseline else None
+    if baseline is not None:
         payload = {
             "python": sys.version.split()[0],
             "kicad_included": have_kicad,
             "results": results,
             "all_stable": all_ok,
         }
-        args.baseline.parent.mkdir(parents=True, exist_ok=True)
-        args.baseline.write_text(
+        baseline.parent.mkdir(parents=True, exist_ok=True)
+        baseline.write_text(
             json.dumps(payload, indent=1, sort_keys=True) + "\n", encoding="utf-8"
         )
-        print(f"baseline written to {args.baseline}")
+        print(f"baseline written to {baseline}")
     return 0 if all_ok else 1
 
 
