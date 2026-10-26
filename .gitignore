@@ -1,0 +1,7 @@
+# development workspace, never shipped
+out/
+venv/
+__pycache__/
+.pytest_cache/
+PROGRESS.md
+*.kicad_prl
